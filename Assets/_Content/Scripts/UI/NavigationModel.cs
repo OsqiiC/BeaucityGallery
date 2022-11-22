@@ -5,19 +5,9 @@ using UnityEngine.Events;
 
 public class NavigationModel : MonoBehaviour
 {
-    public UnityEvent CloseCall;
-
     private List<Controller> controllers = new List<Controller>();
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            CloseCall?.Invoke();
-        }
-    }
-
-    public void AddController(Controller controller)
+    public void AddControllerSlicable(Controller controller)
     {
         if (controllers.Contains(controller))
         {
@@ -31,10 +21,13 @@ public class NavigationModel : MonoBehaviour
         controllers.Add(controller);
     }
 
+    public void AddController(Controller controller)
+    {
+        controllers.Add(controller);
+    }
+
     public Controller GetCurrentController()
     {
-        //if (controllers.Count < 1) return null;
-        //return controllers[controllers.Count - 1];
         return GetController(controllers.Count - 1);
     }
 

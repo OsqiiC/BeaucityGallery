@@ -9,6 +9,7 @@ public class PhotoModeView : View
     public Button exitButton;
     public Button photoButton;
 
+    public UnityEvent OnBackPressed;
     public UnityEvent PrePhoto;
     public UnityEvent<Texture2D> PostPhoto;
 
@@ -18,6 +19,14 @@ public class PhotoModeView : View
     private Image flashImage;
     [SerializeField]
     private float flashDuration;
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            OnBackPressed?.Invoke();
+        }
+    }
 
     public void Open()
     {
@@ -65,5 +74,6 @@ public class PhotoModeView : View
     public override void Initialize()
     {
         photoButton.onClick.AddListener(() => { StartCoroutine(Screenshot(flashDuration)); });
+        exitButton.onClick.AddListener(() => OnBackPressed?.Invoke());
     }
 }

@@ -27,11 +27,11 @@ public class PhotoModeController : Controller
 
     private void Initialize()
     {
-        navigationModel.CloseCall.AddListener(Back);
-        photoModeView.exitButton.onClick.AddListener(Back);
+        photoModeView.OnBackPressed.AddListener(Back);
         photoModeView.PostPhoto.AddListener((texture) => photoModel.AddPhoto(texture, projectModel.GetCurrentProject().projectID));
         photoModeView.PrePhoto.AddListener(() => PrePhoto?.Invoke());
     }
+
     public override void Close()
     {
         base.Close();

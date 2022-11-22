@@ -13,6 +13,11 @@ public abstract class Controller
         IsOpened = false;
     }
 
+    public Controller()
+    {
+        IsOpened = false;
+    }
+
     public virtual void Open()
     {
         IsOpened = true;
