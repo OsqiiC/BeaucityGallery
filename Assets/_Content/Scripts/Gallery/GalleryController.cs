@@ -34,17 +34,18 @@ public class GalleryController : Controller
         {
             if (galleryView.selectionMode == GalleryView.SelectionMode.Delete)
             {
-                foreach (var item in galleryView.GetSelectedCards())
+
+                foreach (var item in galleryView.SelectionView.GetSelected<GalleryCardView>())
                 {
                     photoModel.DeletePhoto(item.photoData.photoData);
+                    galleryView.DeleteCard(item);
                 }
-                galleryView.RemoveSelectedCards();
             }
             else if (galleryView.selectionMode == GalleryView.SelectionMode.Share)
             {
                 List<string> photoPaths = new();
 
-                foreach (var item in galleryView.GetSelectedCards())
+                foreach (var item in galleryView.SelectionView.GetSelected<GalleryCardView>())
                 {
                     photoPaths.Add(item.photoData.photoData.fullFilePath);
                 }
@@ -81,7 +82,7 @@ public class GalleryController : Controller
     {
         if (!IsOpened) return;
 
-        if (galleryView.fullScreenViewOpened)
+        if (galleryView.FullScreenViewOpened)
         {
             galleryView.CloseFullscreenView();
             return;

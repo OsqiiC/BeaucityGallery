@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public abstract class SelectableCardView : MonoBehaviour
 {
-    public UnityEvent<SelectableCardView> OnSelect = new(); 
+    public UnityEvent<SelectableCardView> OnSelect = new UnityEvent<SelectableCardView>(); 
     
     [SerializeField]
     private Button selectionButton;
@@ -22,7 +22,7 @@ public abstract class SelectableCardView : MonoBehaviour
         selectionButton.onClick.AddListener(SelectionButtonClick);
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         selectionButton.onClick.RemoveAllListeners();
     }

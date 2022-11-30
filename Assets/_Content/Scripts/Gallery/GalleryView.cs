@@ -34,7 +34,8 @@ public class GalleryView : View
 
     private SelectionView selectionView;
     private List<SelectableCardView> selectableCardViews = new List<SelectableCardView>();
-    public bool fullScreenViewOpened { get; private set; }
+    public bool FullScreenViewOpened { get; private set; }
+    public SelectionView SelectionView => selectionView;
 
     private void Update()
     {
@@ -46,7 +47,7 @@ public class GalleryView : View
 
     public override void Initialize()
     {
-        fullScreenViewOpened = false;
+        FullScreenViewOpened = false;
         shareButton.onClick.AddListener(() =>
         {
             EnableCardsSelection(SelectionMode.Share);
@@ -64,16 +65,18 @@ public class GalleryView : View
 
         selectedActionButton.Initialize(this);
         fullscreenPhotoView.exitButton.onClick.AddListener(CloseFullscreenView);
-        selectionView = new SelectionView(selectAllButton, selectableCardViews);
-        selectionView.OnSelectionEnabled.AddListener(OnSelectionEnabled);
+        selectionView = new SelectionView();
+        selectionView.Initialize(selectAllButton);
+        selectionView.EnableCardsSelection(false);
+        selectionView.OnCardsSelectionStateChanged.AddListener((cards) => 
+        {
+            selectedActionButton.ChangeHeader(cards.Count);
+        });
     }
 
     public void Open(List<GalleryCardView.TextureData> photoDatas)
     {
         gameObject.SetActive(true);
-
-        selectionView = new SelectionView(selectAllButton, selectableCardViews);
-        selectionView.OnCardSelected.AddListener(OnCardSelected);
 
         foreach (var item in photoDatas)
         {
@@ -85,38 +88,15 @@ public class GalleryView : View
 
     public void Close()
     {
-        selectionView.OnCardSelected.RemoveAllListeners();
-
         gameObject.SetActive(false);
-
-        selectableCardViews = selectionView.GetAllCards();
-        DeleteAllCards();
+        DeleteCards(selectionView.GetAllCards<GalleryCardView>());
         selectableCardViews.Clear();
     }
 
     public void CloseFullscreenView()
     {
         fullscreenPhotoView.Close();
-        fullScreenViewOpened = false;
-    }
-
-    public void AddCard(GalleryCardView.TextureData photoData)
-    {
-        GalleryCardView cardView = Instantiate(cardPrefab, contentPlaceholder);
-        cardView.OnCardClick.AddListener(OpenFullScreenView);
-        selectionView.AddCard(cardView);
-        cardView.Initialize(photoData);
-    }
-
-    public void RemoveSelectedCards()
-    {
-        List<SelectableCardView> cards = selectionView.GetSelected();
-        foreach (var item in cards)
-        {
-            selectionView.RemoveCard(item);
-            Destroy(item.gameObject);
-        }
-        selectedActionButton.ChangeHeader(selectionView.GetSelected().Count);
+        FullScreenViewOpened = false;
     }
 
     public void EnableCardsSelection(SelectionMode selectionMode)
@@ -128,31 +108,47 @@ public class GalleryView : View
         shareButton.gameObject.SetActive(!selectionEnabled);
 
         selectedActionButton.button.gameObject.SetActive(selectionEnabled);
-        selectedActionButton.ChangeHeader(selectionView.GetSelected().Count);
+        selectedActionButton.ChangeHeader(selectionView.GetSelected<SelectableCardView>().Count);
         selectionView.EnableCardsSelection(selectionEnabled);
     }
 
-    public List<GalleryCardView> GetSelectedCards()
+    public void DeleteCards(List<GalleryCardView> galleryCardViews)
     {
-        List<GalleryCardView> result = new List<GalleryCardView>();
-
-        foreach (var item in selectionView.GetAllCards())
+        foreach (var item in galleryCardViews)
         {
-            result.Add(item as GalleryCardView);
+            Destroy(item.gameObject);
+            selectionView.RemoveCard(item);
         }
+    }
 
+    public void DeleteCard(GalleryCardView galleryCardView)
+    {
+        Destroy(galleryCardView.gameObject);
+        selectionView.RemoveCard(galleryCardView);
+    }
 
-        return result;
+    private void AddCard(GalleryCardView.TextureData photoData)
+    {
+        GalleryCardView cardView = Instantiate(cardPrefab, contentPlaceholder);
+        cardView.OnCardClick.AddListener(OpenFullScreenView);
+        selectionView.AddCard(cardView);
+        cardView.Initialize(photoData);
+    }
+
+    private void RemoveCard(GalleryCardView galleryCardView)
+    {
+        selectionView.RemoveCard(galleryCardView);
+        Destroy(galleryCardView);
     }
 
     private void OpenFullScreenView(GalleryCardView cardView)
     {
-        fullScreenViewOpened = true;
+        FullScreenViewOpened = true;
         List<GalleryCardView> cards = new List<GalleryCardView>();
 
-        foreach (var item in selectionView.GetAllCards())
+        foreach (var item in selectionView.GetAllCards<GalleryCardView>())
         {
-            cards.Add(item as GalleryCardView);
+            cards.Add(item);
         }
 
         for (int i = 0; i < cards.Count; i++)
@@ -174,14 +170,6 @@ public class GalleryView : View
         throw new System.Exception("!ATTENTION! critical EGOR occured");
     }
 
-    private void DeleteAllCards()
-    {
-        foreach (var item in selectableCardViews)
-        {
-            selectionView.RemoveCard(item);
-            Destroy(item.gameObject);
-        }
-    }
     private void MoveDownContentScroll(SelectionMode selectionMode)
     {
         if (selectionMode == SelectionMode.Disabled)
@@ -226,7 +214,7 @@ public class GalleryView : View
 
     private void OnCardSelected(SelectableCardView selectableCard)
     {
-        selectedActionButton.ChangeHeader(selectionView.GetSelected().Count);
+        selectedActionButton.ChangeHeader(selectionView.GetSelected<GalleryCardView>().Count);
     }
 
     public enum SelectionMode
