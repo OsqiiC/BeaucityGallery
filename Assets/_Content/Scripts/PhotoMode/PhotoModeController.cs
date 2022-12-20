@@ -7,20 +7,20 @@ using Zenject;
 
 public class PhotoModeController : Controller
 {
-    public UnityEvent PrePhoto = new();
-
     private PhotoModel photoModel;
     private PhotoModeView photoModeView;
     private ProjectModel projectModel;
     private NavigationModel navigationModel;
+    private ColorSwitch colorSwitch;
 
     public PhotoModeController(PhotoModel photoModel, PhotoModeView photoModeView, NavigationModel navigationModel,
-        ProjectModel projectModel) : base(photoModeView)
+        ProjectModel projectModel, ColorSwitch colorSwitch) : base(photoModeView)
     {
         this.photoModel = photoModel;
         this.photoModeView = photoModeView;
         this.navigationModel = navigationModel;
         this.projectModel = projectModel;
+        this.colorSwitch = colorSwitch;
 
         Initialize();
     }
@@ -29,7 +29,7 @@ public class PhotoModeController : Controller
     {
         photoModeView.OnBackPressed.AddListener(Back);
         photoModeView.PostPhoto.AddListener((texture) => photoModel.AddPhoto(texture, projectModel.GetCurrentProject().projectID));
-        photoModeView.PrePhoto.AddListener(() => PrePhoto?.Invoke());
+        photoModeView.PrePhoto.AddListener(colorSwitch.SwitchColors);
     }
 
     public override void Close()

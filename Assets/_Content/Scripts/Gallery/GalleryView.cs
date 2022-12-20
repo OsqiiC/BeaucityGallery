@@ -107,6 +107,7 @@ public class GalleryView : View
         deleteButton.gameObject.SetActive(!selectionEnabled);
         shareButton.gameObject.SetActive(!selectionEnabled);
 
+        contentScroll.content.GetComponent<GridLayoutGroup>().padding.top = selectionEnabled ? 100 : 0;
         selectedActionButton.button.gameObject.SetActive(selectionEnabled);
         selectedActionButton.ChangeHeader(selectionView.GetSelected<SelectableCardView>().Count);
         selectionView.EnableCardsSelection(selectionEnabled);

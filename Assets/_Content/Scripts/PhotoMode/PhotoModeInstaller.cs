@@ -8,10 +8,13 @@ public class PhotoModeInstaller : MonoInstaller
 {
     [SerializeField]
     private PhotoModeView photoModeView;
+    [SerializeField]
+    private ColorSwitch colorSwitch;
 
     public override void InstallBindings()
     {
         Container.BindInstance(photoModeView);
+        Container.BindInstance(colorSwitch);
         Container.BindInterfacesAndSelfTo<PhotoModeController>().AsSingle();
     }
 }
