@@ -18,6 +18,8 @@ public class PhotoModel : MonoBehaviour
         storageName = "photoStorage";
         storageDirectory = Application.persistentDataPath + "/" + storageName;
         jsonPath = Application.persistentDataPath + "/" + storageName + "/_ProjectPhotoModel.txt";
+
+        Debug.Log(jsonPath);
         if (!File.Exists(jsonPath))
         {
             CreateStorage();
@@ -47,7 +49,7 @@ public class PhotoModel : MonoBehaviour
         PhotoData photo = new PhotoData()
         {
             projectID = projectID,
-            fullFilePath = GetPhotoFullPath(storageDirectory,photoName),
+            fullFilePath = GetPhotoFullPath(storageDirectory, photoName),
             name = photoName,
             height = texture.height,
             width = texture.width
@@ -62,9 +64,11 @@ public class PhotoModel : MonoBehaviour
 
     public Texture2D GetPhotoTexture(PhotoData photo)
     {
-        Texture2D texture = new Texture2D(width: photo.width, height: photo.width);
-
+        Texture2D texture = new Texture2D(width: photo.width, height: photo.width, textureFormat: TextureFormat.RGBA32, false);
+      
         texture.LoadImage(File.ReadAllBytes(photo.fullFilePath));
+        texture.Compress(false);
+        texture.Apply(false, false);
 
         return texture;
     }
