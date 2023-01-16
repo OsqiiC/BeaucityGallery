@@ -1,0 +1,27 @@
+fileFormatVersion: 2
+guid: 0f813c388643eec4d9b0ecefdd4b1ce5
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - TRY Grtsk Peta Bkslnt
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 9e030a6704749ad40a2ec8855132c418, type: 3}
+  - {fileID: 12800000, guid: 0c4ff579c1893534ebf60f6b62d9fa79, type: 3}
+  - {fileID: 12800000, guid: 63015f01345509a4a962cd75d2ead9b7, type: 3}
+  - {fileID: 12800000, guid: fdf8bd3f487ef0f40b394cfae49d45c9, type: 3}
+  - {fileID: 12800000, guid: a8ec59ee4af05c2408eaaf767a85d5d7, type: 3}
+  - {fileID: 12800000, guid: 9bd23ce697eafd749a551fa8bddb077a, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

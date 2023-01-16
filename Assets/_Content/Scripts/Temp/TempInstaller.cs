@@ -12,5 +12,7 @@ public class TempInstaller : MonoInstaller
     {
         Container.BindInstance(tempView);
         Container.Bind<TempController>().AsSingle().NonLazy();
+
+        Watch.StartWatch();
     }
 }

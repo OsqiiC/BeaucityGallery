@@ -16,7 +16,8 @@ public class GalleryView : View
     public Button shareButton;
     public SelectedActionButton selectedActionButton;
 
-
+    [SerializeField]
+    private GameObject noPhotoText;
     [SerializeField]
     private SelectionView.SelectAllButton selectAllButton;
     [SerializeField]
@@ -34,6 +35,7 @@ public class GalleryView : View
 
     private SelectionView selectionView;
     private List<SelectableCardView> selectableCardViews = new List<SelectableCardView>();
+
     public bool FullScreenViewOpened { get; private set; }
     public SelectionView SelectionView => selectionView;
 
@@ -68,7 +70,7 @@ public class GalleryView : View
         selectionView = new SelectionView();
         selectionView.Initialize(selectAllButton);
         selectionView.EnableCardsSelection(false);
-        selectionView.OnCardsSelectionStateChanged.AddListener((cards) => 
+        selectionView.OnCardsSelectionStateChanged.AddListener((cards) =>
         {
             selectedActionButton.ChangeHeader(cards.Count);
         });
@@ -76,7 +78,7 @@ public class GalleryView : View
 
     public void Open(List<GalleryCardView.TextureData> photoDatas)
     {
-        gameObject.SetActive(true);
+      gameObject.SetActive(true);
 
         foreach (var item in photoDatas)
         {
@@ -84,6 +86,7 @@ public class GalleryView : View
         }
 
         EnableCardsSelection(SelectionMode.Disabled);
+        SetActiveNoPhotoText(photoDatas.Count == 0);
     }
 
     public void Close()
@@ -107,7 +110,7 @@ public class GalleryView : View
         deleteButton.gameObject.SetActive(!selectionEnabled);
         shareButton.gameObject.SetActive(!selectionEnabled);
 
-        contentScroll.content.GetComponent<GridLayoutGroup>().padding.top = selectionEnabled ? 100 : 0;
+        contentScroll.content.GetComponent<GridLayoutGroup>().padding.top = selectionEnabled ? 230 : 80;
         selectedActionButton.button.gameObject.SetActive(selectionEnabled);
         selectedActionButton.ChangeHeader(selectionView.GetSelected<SelectableCardView>().Count);
         selectionView.EnableCardsSelection(selectionEnabled);
@@ -128,6 +131,13 @@ public class GalleryView : View
         selectionView.RemoveCard(galleryCardView);
     }
 
+    public void SetActiveNoPhotoText(bool value)
+    {
+        noPhotoText.SetActive(value);
+        shareButton.gameObject.SetActive(!value);
+        deleteButton.gameObject.SetActive(!value);
+    }
+
     private void AddCard(GalleryCardView.TextureData photoData)
     {
         GalleryCardView cardView = Instantiate(cardPrefab, contentPlaceholder);
@@ -136,10 +146,9 @@ public class GalleryView : View
         cardView.Initialize(photoData);
     }
 
-    private void RemoveCard(GalleryCardView galleryCardView)
+    public int GetCardsCount()
     {
-        selectionView.RemoveCard(galleryCardView);
-        Destroy(galleryCardView);
+        return selectionView.GetAllCards<GalleryCardView>().Count;
     }
 
     private void OpenFullScreenView(GalleryCardView cardView)

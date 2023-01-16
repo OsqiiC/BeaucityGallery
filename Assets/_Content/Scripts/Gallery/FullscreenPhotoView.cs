@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UI.Extensions;
@@ -73,8 +74,8 @@ public class FullscreenPhotoView : MonoBehaviour
 
     public void AddImage(GalleryCardView.TextureData photoData)
     {
-        Debug.Log(photoData.texture.width+ "texture widt");
-        Debug.Log(photoData.photoData.width + "photodata width");
+        Watch.ResetWatch();
+
         Sprite sprite = Sprite.Create(photoData.texture, new Rect(0, 0, photoData.photoData.width, photoData.photoData.height), new Vector2(0.5f, 0.5f));
         Image image = Instantiate(imagePrefab, scrollRect.content);
         RoflanImage roflanImage = new RoflanImage() { image = image, sizeDelta = new Vector2(photoData.photoData.width, photoData.photoData.height) };
@@ -82,6 +83,7 @@ public class FullscreenPhotoView : MonoBehaviour
         images.Add(roflanImage);
 
         horizontalScrollSnap.AddChild(image.gameObject);
+        Watch.LogTime("gallery opening time");
     }
 
     private void SelectionPageChanged(int pageIndex)
@@ -117,9 +119,9 @@ public class FullscreenPhotoView : MonoBehaviour
 
     private void DeltaScaleChanged(float delta, Vector2 position)
     {
-        if (currentRectTransform.localScale.x > 4 && delta>0) return;
-        if (currentRectTransform.localScale.x < 0.5f && delta<0) return;
-        if (!horizontalScrollSnap.isSettled) 
+        if (currentRectTransform.localScale.x > 4 && delta > 0) return;
+        if (currentRectTransform.localScale.x < 0.5f && delta < 0) return;
+        if (!horizontalScrollSnap.isSettled)
         {
             horizontalScrollSnap.transitionSpeed = 100;
             scrollRect.enabled = false;

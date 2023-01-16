@@ -22,13 +22,16 @@ public class GalleryCardView : SelectableCardView
     private Image checkMark;
     [SerializeField]
     private Button cardButton;
+    [SerializeField]
+    private AspectRatioFitter aspectRatioFitter;
 
     public GalleryCardView Initialize(TextureData photoData)
     {
         this.photoData = photoData;
         gameObject.SetActive(true);
         contentImage.texture = photoData.texture;
-        SetContentSize();
+      //  SetContentSize();
+        UpdateAspectRatio();
         checkMark.gameObject.SetActive(selected);
         cardButton.onClick.AddListener(()=> OnCardClick?.Invoke(this));
         return this;
@@ -36,7 +39,7 @@ public class GalleryCardView : SelectableCardView
 
     public override void OnSelected()
     {
-        SetContentSize();
+        UpdateAspectRatio();
         checkMark.gameObject.SetActive(selected);
     }
 
@@ -46,26 +49,15 @@ public class GalleryCardView : SelectableCardView
         cardButton.gameObject.SetActive(!value);
     }
 
-    private void SetContentSize()
+    public void UpdateAspectRatio()
     {
-        float widthToHeightRatio = (float)Screen.width / Screen.height;
-        if (contentImage.texture.width > contentImage.texture.height) widthToHeightRatio = 1 / widthToHeightRatio;
-
-        if (widthToHeightRatio < 1)
-        {
-            contentImage.rectTransform.sizeDelta = new Vector2(cardRect.rect.width, cardRect.rect.width * (1f / widthToHeightRatio));
-        }
-        else
-        {
-            contentImage.rectTransform.sizeDelta = new Vector2(cardRect.rect.height * widthToHeightRatio, cardRect.rect.height);
-        }
-
-        contentImage.rectTransform.localPosition = Vector3.zero;
+        aspectRatioFitter.aspectRatio = (float)photoData.texture.width / photoData.texture.height;
     }
 
     public class TextureData
     {
         public Texture2D texture;
         public PhotoModel.PhotoData photoData;
+        public string filePath;
     }
 }

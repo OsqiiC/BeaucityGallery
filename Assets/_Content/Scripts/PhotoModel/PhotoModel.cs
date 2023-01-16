@@ -64,11 +64,10 @@ public class PhotoModel : MonoBehaviour
 
     public Texture2D GetPhotoTexture(PhotoData photo)
     {
-        Texture2D texture = new Texture2D(width: photo.width, height: photo.width, textureFormat: TextureFormat.RGBA32, false);
+        Texture2D texture = new Texture2D(512, 512, textureFormat: TextureFormat.RGB24, false);
       
         texture.LoadImage(File.ReadAllBytes(photo.fullFilePath));
-        texture.Compress(false);
-        texture.Apply(false, false);
+        Resources.UnloadUnusedAssets();
 
         return texture;
     }

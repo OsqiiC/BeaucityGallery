@@ -34,11 +34,15 @@ public class GalleryController : Controller
         {
             if (galleryView.selectionMode == GalleryView.SelectionMode.Delete)
             {
-
                 foreach (var item in galleryView.SelectionView.GetSelected<GalleryCardView>())
                 {
                     photoModel.DeletePhoto(item.photoData.photoData);
                     galleryView.DeleteCard(item);
+                }
+                if (galleryView.GetCardsCount() == 0)
+                {
+                    galleryView.EnableCardsSelection(GalleryView.SelectionMode.Disabled);
+                    galleryView.SetActiveNoPhotoText(true);
                 }
             }
             else if (galleryView.selectionMode == GalleryView.SelectionMode.Share)
@@ -59,10 +63,12 @@ public class GalleryController : Controller
     {
         base.Close();
         galleryView.Close();
+        Resources.UnloadUnusedAssets();
     }
 
     public override void Open()
     {
+
         base.Open();
         List<GalleryCardView.TextureData> photoTextures = new List<GalleryCardView.TextureData>();
 
@@ -71,11 +77,13 @@ public class GalleryController : Controller
             photoTextures.Add(new GalleryCardView.TextureData()
             {
                 texture = photoModel.GetPhotoTexture(item),
+                filePath = item.fullFilePath,
                 photoData = item
             });
         }
 
         galleryView.Open(photoTextures);
+
     }
 
     public void Back()
