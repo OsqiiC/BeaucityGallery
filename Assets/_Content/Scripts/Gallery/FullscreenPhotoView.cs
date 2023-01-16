@@ -15,6 +15,8 @@ public class FullscreenPhotoView : MonoBehaviour
     [SerializeField]
     private Image imagePrefab;
     [SerializeField]
+    private FullscreenImage fullscreenImage;
+    [SerializeField]
     private HorizontalScrollSnap horizontalScrollSnap;
     [SerializeField]
     private ScrollRect scrollRect;
@@ -25,10 +27,10 @@ public class FullscreenPhotoView : MonoBehaviour
     [SerializeField]
     private TouchInput touchInput;
 
-    private RoflanImage currentImage;
-    private List<RoflanImage> images = new List<RoflanImage>();
+    private FullscreenImage currentImage;
+    private List<FullscreenImage> images = new List<FullscreenImage>();
     private bool isScaling = false;
-    private RectTransform currentRectTransform => currentImage.image.rectTransform;
+    private RectTransform currentRectTransform => currentImage.rawImage.rectTransform;
     private float canvasHeight => canvasScaler.referenceResolution.x * ((float)Screen.height / Screen.width);
     private float canvasWidth => canvasScaler.referenceResolution.x;
 
@@ -72,15 +74,28 @@ public class FullscreenPhotoView : MonoBehaviour
         DeleteImages();
     }
 
+    //public void AddImage(GalleryCardView.TextureData photoData)
+    //{
+    //    Watch.ResetWatch();
+
+    //    Sprite sprite = Sprite.Create(photoData.texture, new Rect(0, 0, photoData.photoData.width, photoData.photoData.height), new Vector2(0.5f, 0.5f));
+    //    Image image = Instantiate(imagePrefab, scrollRect.content);
+    //    RoflanImage roflanImage = new RoflanImage() { image = image, sizeDelta = new Vector2(photoData.photoData.width, photoData.photoData.height) };
+    //    image.sprite = sprite;
+    //    images.Add(roflanImage);
+
+    //    horizontalScrollSnap.AddChild(image.gameObject);
+    //    Watch.LogTime("gallery opening time");
+    //}  
+
     public void AddImage(GalleryCardView.TextureData photoData)
     {
         Watch.ResetWatch();
 
-        Sprite sprite = Sprite.Create(photoData.texture, new Rect(0, 0, photoData.photoData.width, photoData.photoData.height), new Vector2(0.5f, 0.5f));
-        Image image = Instantiate(imagePrefab, scrollRect.content);
-        RoflanImage roflanImage = new RoflanImage() { image = image, sizeDelta = new Vector2(photoData.photoData.width, photoData.photoData.height) };
-        image.sprite = sprite;
-        images.Add(roflanImage);
+        FullscreenImage image = Instantiate(fullscreenImage, scrollRect.content);
+        image.rawImage.texture = photoData.texture;
+
+        images.Add(image);
 
         horizontalScrollSnap.AddChild(image.gameObject);
         Watch.LogTime("gallery opening time");
@@ -88,15 +103,7 @@ public class FullscreenPhotoView : MonoBehaviour
 
     private void SelectionPageChanged(int pageIndex)
     {
-        Image image = horizontalScrollSnap.ChildObjects[pageIndex].GetComponent<Image>();
-
-        foreach (var item in images)
-        {
-            if (item.image == image)
-            {
-                currentImage = item;
-            }
-        }
+        currentImage = images[pageIndex];
 
         ResetImageSizeDelta(images);
         pageCounter.text = $"{pageIndex + 1}/{horizontalScrollSnap.ChildObjects.Length}";
@@ -265,16 +272,16 @@ public class FullscreenPhotoView : MonoBehaviour
         StartCoroutine(temp());
     }
 
-    private void ResetImageSizeDelta(RoflanImage image)
+    private void ResetImageSizeDelta(FullscreenImage image)
     {
-        image.image.rectTransform.sizeDelta = new Vector2(image.image.rectTransform.sizeDelta.x, image.image.rectTransform.sizeDelta.x * (image.sizeDelta.y / image.sizeDelta.x));
+        image.rawImage.rectTransform.sizeDelta = new Vector2(image.rawImage.rectTransform.sizeDelta.x, image.rawImage.rectTransform.sizeDelta.x * (image.textureResolution.y / image.textureResolution.x));
     }
 
-    private void ResetImageSizeDelta(List<RoflanImage> images)
+    private void ResetImageSizeDelta(List<FullscreenImage> images)
     {
         foreach (var image in images)
         {
-            image.image.rectTransform.sizeDelta = new Vector2(image.image.rectTransform.sizeDelta.x, image.image.rectTransform.sizeDelta.x * (image.sizeDelta.y / image.sizeDelta.x));
+            image.rawImage.rectTransform.sizeDelta = new Vector2(image.rawImage.rectTransform.sizeDelta.x, image.rawImage.rectTransform.sizeDelta.x * (image.textureResolution.y / image.textureResolution.x));
         }
     }
 
@@ -333,9 +340,4 @@ public class FullscreenPhotoView : MonoBehaviour
         return new Rect(downLeftCorner, rectTransform.localScale * rectTransform.sizeDelta);
     }
 
-    private class RoflanImage
-    {
-        public Image image;
-        public Vector2 sizeDelta;
-    }
 }
