@@ -59,6 +59,7 @@ public class FullscreenPhotoView : MonoBehaviour
         }
 
         StartCoroutine(kal());
+
     }
 
     public void Close()
@@ -90,7 +91,7 @@ public class FullscreenPhotoView : MonoBehaviour
 
     public void AddImage(GalleryCardView.TextureData photoData)
     {
-        Watch.ResetWatch();
+
 
         FullscreenImage image = Instantiate(fullscreenImage, scrollRect.content);
         image.rawImage.texture = photoData.texture;
@@ -98,7 +99,6 @@ public class FullscreenPhotoView : MonoBehaviour
         images.Add(image);
 
         horizontalScrollSnap.AddChild(image.gameObject);
-        Watch.LogTime("gallery opening time");
     }
 
     private void SelectionPageChanged(int pageIndex)

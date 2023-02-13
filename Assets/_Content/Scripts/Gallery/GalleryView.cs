@@ -78,7 +78,8 @@ public class GalleryView : View
 
     public void Open(List<GalleryCardView.TextureData> photoDatas)
     {
-      gameObject.SetActive(true);
+
+        gameObject.SetActive(true);
 
         foreach (var item in photoDatas)
         {
@@ -87,6 +88,17 @@ public class GalleryView : View
 
         EnableCardsSelection(SelectionMode.Disabled);
         SetActiveNoPhotoText(photoDatas.Count == 0);
+    }
+
+    public async void Open(IEnumerator enumerator)
+    {
+        gameObject.SetActive(true);
+        SetActiveNoPhotoText(false);
+        EnableCardsSelection(SelectionMode.Disabled);
+
+        await System.Threading.Tasks.Task.Yield();
+
+        StartCoroutine(enumerator);
     }
 
     public void Close()
@@ -111,7 +123,10 @@ public class GalleryView : View
         shareButton.gameObject.SetActive(!selectionEnabled);
 
         contentScroll.content.GetComponent<GridLayoutGroup>().padding.top = selectionEnabled ? 230 : 80;
-        selectedActionButton.button.gameObject.SetActive(selectionEnabled);
+
+        Button govno = selectedActionButton.button;
+
+        govno.gameObject.SetActive(selectionEnabled);
         selectedActionButton.ChangeHeader(selectionView.GetSelected<SelectableCardView>().Count);
         selectionView.EnableCardsSelection(selectionEnabled);
     }
@@ -138,7 +153,7 @@ public class GalleryView : View
         deleteButton.gameObject.SetActive(!value);
     }
 
-    private void AddCard(GalleryCardView.TextureData photoData)
+    public void AddCard(GalleryCardView.TextureData photoData)
     {
         GalleryCardView cardView = Instantiate(cardPrefab, contentPlaceholder);
         cardView.OnCardClick.AddListener(OpenFullScreenView);

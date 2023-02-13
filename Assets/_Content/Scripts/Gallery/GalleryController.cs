@@ -24,7 +24,7 @@ public class GalleryController : Controller
 
     private void Initialize()
     {
-        if(photoModel ==null || projectModel == null || navigationModel == null)
+        if (photoModel == null || projectModel == null || navigationModel == null)
         {
             Debug.LogError("install PhotoModel ProjectModel NavigationModel in projectContext");
         }
@@ -66,24 +66,59 @@ public class GalleryController : Controller
         Resources.UnloadUnusedAssets();
     }
 
-    public override void Open()
+    public override async void Open()
     {
 
         base.Open();
-        List<GalleryCardView.TextureData> photoTextures = new List<GalleryCardView.TextureData>();
+        galleryView.gameObject.SetActive(true);
+        await System.Threading.Tasks.Task.Yield();
+        //foreach (var item in photoModel.GetPhotos(projectModel.GetCurrentProject().projectID))
+        //{
+        //    photoTextures.Add(new GalleryCardView.TextureData()
+        //    {
+        //        texture = photoModel.GetPhotoTexture(item),
+        //        filePath = item.fullFilePath,
+        //        photoData = item
+        //    });
+        //}
 
-        foreach (var item in photoModel.GetPhotos(projectModel.GetCurrentProject().projectID))
+        IEnumerator govno()
         {
-            photoTextures.Add(new GalleryCardView.TextureData()
+            Watch.ResetWatch();
+            List<PhotoModel.PhotoData> photoDatas = photoModel.GetPhotos(projectModel.GetCurrentProject().projectID);
+
+            for (int i = 0; i < photoDatas.Count; i++)
             {
-                texture = photoModel.GetPhotoTexture(item),
-                filePath = item.fullFilePath,
-                photoData = item
-            });
+                PhotoModel.PhotoData item = photoDatas[i];
+                if (i < 8)
+                {
+                    Watch.ResetWatch();
+                    galleryView.AddCard(new GalleryCardView.TextureData()
+                    {
+                        texture = photoModel.GetPhotoTexture(item),
+                        filePath = item.fullFilePath,
+                        photoData = item
+                    });
+                    Watch.LogTime();
+                }
+                else
+                {
+                    yield return new WaitForSeconds(0.1f);
+                    yield return photoModel.GetTexture(item, (texture) =>
+                    {
+                        galleryView.AddCard(new GalleryCardView.TextureData()
+                        {
+                            texture = texture,
+                            filePath = item.fullFilePath,
+                            photoData = item
+                        });
+                    });
+                }
+            }
+            Watch.LogTime();
         }
 
-        galleryView.Open(photoTextures);
-
+        galleryView.Open(govno());
     }
 
     public void Back()
@@ -95,7 +130,7 @@ public class GalleryController : Controller
             galleryView.CloseFullscreenView();
             return;
         }
-        if(galleryView.selectionMode != GalleryView.SelectionMode.Disabled)
+        if (galleryView.selectionMode != GalleryView.SelectionMode.Disabled)
         {
             galleryView.EnableCardsSelection(GalleryView.SelectionMode.Disabled);
             return;

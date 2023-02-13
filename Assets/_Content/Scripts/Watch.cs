@@ -16,9 +16,13 @@ public static class Watch
         stopwatch.Restart();
     }
 
-    public static float GetWatchTime()
+    public static float GetTimeTicks()
     {
         return stopwatch.ElapsedTicks;
+    }   
+    public static float GetTimeMilliseconds()
+    {
+        return stopwatch.ElapsedMilliseconds;
     }
 
     public static void LogTime(string messege)
@@ -27,6 +31,14 @@ public static class Watch
         long ms = stopwatch.ElapsedMilliseconds;
         Debug.Log("\n" +
             +ticks + " ticks | " + ms + " ms" + " " + messege);
+    }
+    
+    public static void LogTime()
+    {
+        long ticks = stopwatch.ElapsedTicks;
+        long ms = stopwatch.ElapsedMilliseconds;
+        Debug.Log("\n" +
+            +ticks + " ticks | " + ms + " ms" + " " + "default log messege");
     }
 
     public static void ResetLogTime(string messege)

@@ -72,6 +72,15 @@ public class PhotoModel : MonoBehaviour
         return texture;
     }
 
+    public IEnumerator GetTexture(PhotoData photo,Action<Texture2D> callback)
+    {
+        Texture2D texture = new Texture2D(512, 512, textureFormat: TextureFormat.RGB24, false);
+
+        texture.LoadImage(File.ReadAllBytes(photo.fullFilePath));
+        yield return Resources.UnloadUnusedAssets();
+        callback?.Invoke(texture);
+    }
+
     public List<PhotoData> GetPhotos(string projectID)
     {
         List<PhotoData> result = new List<PhotoData>();
@@ -94,7 +103,7 @@ public class PhotoModel : MonoBehaviour
 
     private void SavePhoto(PhotoData photo, Texture2D texture)
     {
-        File.WriteAllBytes(photo.fullFilePath, texture.EncodeToJPG());
+        File.WriteAllBytes(photo.fullFilePath, texture.EncodeToJPG(10));
         photos.Add(photo);
         SaveStorage();
     }
